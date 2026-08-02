@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Node.js LendTrack Money Lending Application
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: money-lending-app:latest
+    container_name: lendtrack-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - lendtrack-data:/app/data
+
+  # Nginx Reverse Proxy Server with Authentication
+  nginx:
+    image: nginx:alpine
+    container_name: lendtrack-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - web
+
+volumes:
+  lendtrack-data:
+    driver: local
