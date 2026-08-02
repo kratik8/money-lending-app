@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LendTrack Pro | Money Lending & Borrower Ledger System</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="brand-text">
+                    <h2>LendTrack <span class="badge-pro">PRO</span></h2>
+                    <span>Node Financial Ledger</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="dashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="15" width="7" height="6"/></svg>
+                    <span>Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="borrowers">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Borrowers</span>
+                </button>
+                <button class="nav-item" data-view="loans">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <span>Loans & Ledger</span>
+                </button>
+                <button class="nav-item" data-view="calculator">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                    <span>EMI Calculator</span>
+                </button>
+                <button class="nav-item" data-view="settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <span>Backup & Node Engine</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="server-status">
+                    <span class="pulse-dot"></span>
+                    <span id="serverStatusText">Node API Online</span>
+                </div>
+                <button id="themeToggle" class="theme-btn">
+                    <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                    <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                    <span id="themeLabel">Light Theme</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <!-- Header Bar -->
+            <header class="top-header">
+                <div class="page-title">
+                    <h1 id="viewTitle">Financial Portfolio Dashboard</h1>
+                    <p id="viewSubtitle">Overview of capital allocation, recovery performance, and active borrower ledgers</p>
+                </div>
+                <div class="header-actions">
+                    <!-- Multi-Currency Selector -->
+                    <div class="currency-picker-wrapper">
+                        <select id="currencySelector" class="form-select currency-select" title="Select Currency & Region">
+                            <option value="INR">🇮🇳 INR (₹ Rupee)</option>
+                            <option value="USD">🇺🇸 USD ($ Dollar)</option>
+                            <option value="EUR">🇪🇺 EUR (€ Euro)</option>
+                            <option value="GBP">🇬🇧 GBP (£ Pound)</option>
+                            <option value="JPY">🇯🇵 JPY (¥ Yen)</option>
+                            <option value="AUD">🇦🇺 AUD (A$ Dollar)</option>
+                            <option value="CAD">🇨🇦 CAD (C$ Dollar)</option>
+                            <option value="AED">🇦🇪 AED (Dirham)</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-secondary" id="btnOpenCalcQuick">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/></svg>
+                        EMI Engine
+                    </button>
+                    <button class="btn btn-secondary" id="btnOpenAddBorrower">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+                        Add Borrower
+                    </button>
+                    <button class="btn btn-primary" id="btnOpenIssueLoan">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Disburse Loan
+                    </button>
+                </div>
+            </header>
+
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="stats-grid">
+                    <div class="stat-card accent-blue">
+                        <div class="stat-header">
+                            <span class="stat-label">Total Capital Disbursed</span>
+                            <div class="stat-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statTotalCapital">₹0.00</div>
+                        <div class="stat-subtext" id="statActiveLoansCount">0 Active Loans</div>
+                    </div>
+
+                    <div class="stat-card accent-green">
+                        <div class="stat-header">
+                            <span class="stat-label">Principal Recovered</span>
+                            <div class="stat-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statPrincipalCollected">₹0.00</div>
+                        <div class="stat-subtext" id="statRecoveryRate">0% Recovery Ratio</div>
+                    </div>
+
+                    <div class="stat-card accent-emerald">
+                        <div class="stat-header">
+                            <span class="stat-label">Interest Earned</span>
+                            <div class="stat-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statInterestEarned">₹0.00</div>
+                        <div class="stat-subtext">Realized Gross Yield</div>
+                    </div>
+
+                    <div class="stat-card accent-amber">
+                        <div class="stat-header">
+                            <span class="stat-label">Outstanding Portfolio</span>
+                            <div class="stat-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="statOutstandingBalance">₹0.00</div>
+                        <div class="stat-subtext text-warning" id="statOverdueCount">0 Overdue Contracts</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card card-chart">
+                        <div class="card-header">
+                            <h3>Capital & Interest Analytics</h3>
+                            <span class="badge badge-neutral">Node Real-time</span>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="portfolioChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card card-upcoming">
+                        <div class="card-header">
+                            <h3>Active Loan Breakdown</h3>
+                            <button class="btn-text" id="btnNavLoans">View All Contracts &rarr;</button>
+                        </div>
+                        <div class="upcoming-list" id="activeLoansWidget">
+                            <!-- Dynamic list -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card table-card mt-6">
+                    <div class="card-header">
+                        <h3>Recent Transactions & Repayments</h3>
+                        <button class="btn btn-sm btn-emerald" id="btnOpenRecordPaymentDash">+ Record Repayment</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Txn ID</th>
+                                    <th>Date</th>
+                                    <th>Borrower</th>
+                                    <th>Contract</th>
+                                    <th>Total Received</th>
+                                    <th>Principal / Interest</th>
+                                    <th>Payment Method</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashTxnTableBody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: BORROWERS -->
+            <div id="view-borrowers" class="view-section">
+                <div class="toolbar-bar">
+                    <div class="search-box">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <input type="text" id="searchBorrowers" placeholder="Search by name, email, phone, or identity ID...">
+                    </div>
+                    <button class="btn btn-primary" id="btnAddBorrowerPage">+ Add New Borrower</button>
+                </div>
+
+                <div class="borrowers-grid" id="borrowersCardsContainer">
+                    <!-- Dynamic borrower cards -->
+                </div>
+            </div>
+
+            <!-- VIEW: LOANS -->
+            <div id="view-loans" class="view-section">
+                <div class="toolbar-bar">
+                    <div class="filter-tabs">
+                        <button class="filter-tab active" data-filter="all">All Loans</button>
+                        <button class="filter-tab" data-filter="Active">Active</button>
+                        <button class="filter-tab" data-filter="Overdue">Overdue</button>
+                        <button class="filter-tab" data-filter="Paid Off">Paid Off</button>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn btn-emerald" id="btnRecordPaymentLoans">+ Record Repayment</button>
+                        <button class="btn btn-primary" id="btnDisburseLoanLoans">+ Disburse New Loan</button>
+                    </div>
+                </div>
+
+                <div class="card table-card">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Contract ID</th>
+                                    <th>Borrower</th>
+                                    <th>Disbursed Principal</th>
+                                    <th>Interest Rate</th>
+                                    <th>Tenure</th>
+                                    <th>Monthly EMI</th>
+                                    <th>Remaining Balance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loansTableBody">
+                                <!-- Dynamic loan rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: CALCULATOR -->
+            <div id="view-calculator" class="view-section">
+                <div class="calculator-grid">
+                    <div class="card calc-form-card">
+                        <div class="card-header">
+                            <h3>EMI Calculation Engine</h3>
+                            <span class="badge badge-info">Amortization Engine</span>
+                        </div>
+                        <form id="calcForm" class="calc-form">
+                            <div class="form-group">
+                                <label for="calcPrincipal">Loan Principal Amount (<span class="curr-symbol">$</span>)</label>
+                                <input type="number" id="calcPrincipal" class="form-input" value="10000" min="100" step="100" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="calcRate">Annual Interest Rate (%)</label>
+                                    <input type="number" id="calcRate" class="form-input" value="12" min="0.1" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="calcTenure">Tenure (Months)</label>
+                                    <input type="number" id="calcTenure" class="form-input" value="12" min="1" step="1" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Interest Calculation Model</label>
+                                <div class="radio-toggle-group">
+                                    <label class="radio-toggle">
+                                        <input type="radio" name="calcType" value="reducing" checked>
+                                        <span>Reducing Balance (Standard EMI)</span>
+                                    </label>
+                                    <label class="radio-toggle">
+                                        <input type="radio" name="calcType" value="flat">
+                                        <span>Flat Interest Rate</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                                Calculate Amortization Schedule
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card calc-results-card">
+                        <div class="card-header">
+                            <h3>Financial Breakdown</h3>
+                        </div>
+                        <div class="calc-kpi-row">
+                            <div class="kpi-box">
+                                <span>Monthly Installment (EMI)</span>
+                                <h2 id="calcResEmi">₹0.00</h2>
+                            </div>
+                            <div class="kpi-box">
+                                <span>Total Interest Payable</span>
+                                <h2 id="calcResInterest" class="text-emerald">₹0.00</h2>
+                            </div>
+                            <div class="kpi-box">
+                                <span>Total Repayable Amount</span>
+                                <h2 id="calcResTotal" class="text-blue">₹0.00</h2>
+                            </div>
+                        </div>
+
+                        <div class="schedule-container mt-4">
+                            <div class="flex-between align-center mb-2">
+                                <h4>Month-by-Month Schedule</h4>
+                                <button class="btn btn-sm btn-secondary" onclick="window.print()">Print Schedule</button>
+                            </div>
+                            <div class="table-responsive schedule-table-wrapper">
+                                <table class="data-table compact-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Month</th>
+                                            <th>EMI</th>
+                                            <th>Principal</th>
+                                            <th>Interest</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="calcScheduleBody">
+                                        <!-- Dynamic schedule lines -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: BACKUP & SETTINGS -->
+            <div id="view-settings" class="view-section">
+                <div class="settings-grid">
+                    <div class="card p-4">
+                        <h3>Node Database Management</h3>
+                        <p class="text-muted mt-1 mb-4">Export or restore full money lending dataset directly from the Node server endpoint.</p>
+                        
+                        <div class="button-group flex-wrap gap-3">
+                            <a href="/api/backup" download class="btn btn-secondary">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Export Backup (JSON)
+                            </a>
+                            <label class="btn btn-secondary cursor-pointer">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                Restore Data File
+                                <input type="file" id="fileRestore" accept=".json" style="display:none;">
+                            </label>
+                            <button class="btn btn-danger" id="btnResetSampleData">
+                                Reset Demo Dataset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card p-4">
+                        <h3>System Configuration</h3>
+                        <div class="system-info-list mt-3">
+                            <div class="info-row">
+                                <span>Active Currency Mode:</span>
+                                <strong id="activeCurrencyDisplay">INR (₹ - Indian Rupee)</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>Backend Engine:</span>
+                                <strong>Node.js v20 (Express API Server)</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>Storage Engine:</span>
+                                <strong>JSON Storage Engine (/data/db.json)</strong>
+                            </div>
+                            <div class="info-row">
+                                <span>API Status:</span>
+                                <span class="badge badge-success">Online & Healthy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL 1: ADD BORROWER -->
+    <div class="modal-overlay" id="modalBorrower">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Add New Borrower Profile</h3>
+                <button class="modal-close" data-close="modalBorrower">&times;</button>
+            </div>
+            <form id="formBorrower">
+                <div class="form-group">
+                    <label for="bName">Full Name *</label>
+                    <input type="text" id="bName" class="form-input" placeholder="e.g. John Doe" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bEmail">Email Address</label>
+                        <input type="email" id="bEmail" class="form-input" placeholder="john@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="bPhone">Phone Number</label>
+                        <input type="text" id="bPhone" class="form-input" placeholder="+91 98765 43210">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bIdentity">PAN / Aadhaar / Government ID</label>
+                        <input type="text" id="bIdentity" class="form-input" placeholder="ABCDE1234F">
+                    </div>
+                    <div class="form-group">
+                        <label for="bRating">Credit Grade</label>
+                        <select id="bRating" class="form-select">
+                            <option value="A+">A+ (Low Risk)</option>
+                            <option value="A" selected>A (Standard Prime)</option>
+                            <option value="B+">B+ (Moderate)</option>
+                            <option value="B">B (Subprime)</option>
+                            <option value="C">C (High Risk)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="bAddress">Residential / Business Address</label>
+                    <input type="text" id="bAddress" class="form-input" placeholder="123 Main St, City, State">
+                </div>
+                <div class="form-group">
+                    <label for="bNotes">Profile Notes</label>
+                    <input type="text" id="bNotes" class="form-input" placeholder="Additional background information">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="modalBorrower">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Borrower Record</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: DISBURSE LOAN -->
+    <div class="modal-overlay" id="modalLoan">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Disburse New Loan Contract</h3>
+                <button class="modal-close" data-close="modalLoan">&times;</button>
+            </div>
+            <form id="formLoan">
+                <div class="form-group">
+                    <label for="lBorrowerSelect">Select Borrower *</label>
+                    <select id="lBorrowerSelect" class="form-select" required>
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lPrincipal">Principal Loan Amount (<span class="curr-symbol">$</span>) *</label>
+                        <input type="number" id="lPrincipal" class="form-input" value="5000" min="100" step="50" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lRate">Annual Interest Rate (%) *</label>
+                        <input type="number" id="lRate" class="form-input" value="12" min="0.1" step="0.1" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="lTenure">Tenure (Months) *</label>
+                        <input type="number" id="lTenure" class="form-input" value="12" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lType">Interest Model</label>
+                        <select id="lType" class="form-select">
+                            <option value="reducing">Reducing Balance</option>
+                            <option value="flat">Flat Interest</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lStartDate">Disbursement Date *</label>
+                    <input type="date" id="lStartDate" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="lNotes">Contract Purpose / Collateral Notes</label>
+                    <input type="text" id="lNotes" class="form-input" placeholder="Business equipment purchase">
+                </div>
+
+                <div class="loan-quick-preview card p-3 mt-3">
+                    <div class="flex-between">
+                        <span>Calculated Monthly Installment:</span>
+                        <strong id="modalEmiPreview" class="text-blue">₹0.00</strong>
+                    </div>
+                    <div class="flex-between mt-1">
+                        <span>Total Payable Return:</span>
+                        <strong id="modalTotalPreview" class="text-emerald">₹0.00</strong>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="modalLoan">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Disburse Capital & Activate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: RECORD REPAYMENT -->
+    <div class="modal-overlay" id="modalPayment">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Record Loan Repayment Transaction</h3>
+                <button class="modal-close" data-close="modalPayment">&times;</button>
+            </div>
+            <form id="formPayment">
+                <div class="form-group">
+                    <label for="payLoanSelect">Select Active Loan Contract *</label>
+                    <select id="payLoanSelect" class="form-select" required>
+                        <!-- Dynamic options -->
+                    </select>
+                </div>
+
+                <div class="card p-3 my-3 highlight-box" id="payLoanDetailBox">
+                    <div class="flex-between">
+                        <span>Borrower: <strong id="payBorrowerName">-</strong></span>
+                        <span>Remaining Balance: <strong id="payBalanceLeft" class="text-amber">₹0.00</strong></span>
+                    </div>
+                    <div class="flex-between mt-2 text-sm">
+                        <span>Monthly Installment: <span id="payStandardEmi" class="font-bold">₹0.00</span></span>
+                        <span>Status: <span id="payLoanStatus" class="badge badge-neutral">-</span></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="payAmount">Payment Received (<span class="curr-symbol">$</span>) *</label>
+                        <input type="number" id="payAmount" class="form-input" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payDate">Repayment Date *</label>
+                        <input type="date" id="payDate" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="payMethod">Payment Channel</label>
+                        <select id="payMethod" class="form-select">
+                            <option value="UPI / Mobile Payment">UPI / PhonePe / Paytm / GPay</option>
+                            <option value="Bank Transfer">Bank Transfer / NEFT / IMPS</option>
+                            <option value="Cash Handover">Cash Handover</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="payLateFee">Late Fee / Charge (<span class="curr-symbol">$</span>)</label>
+                        <input type="number" id="payLateFee" class="form-input" value="0" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="payNotes">Transaction Notes</label>
+                    <input type="text" id="payNotes" class="form-input" placeholder="Monthly installment received">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-close="modalPayment">Cancel</button>
+                    <button type="submit" class="btn btn-emerald">Confirm Repayment & Print Receipt</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 4: RECEIPT / VOUCHER -->
+    <div class="modal-overlay" id="modalReceipt">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Official Payment Receipt</h3>
+                <button class="modal-close" data-close="modalReceipt">&times;</button>
+            </div>
+            <div class="receipt-paper" id="receiptContent">
+                <!-- Receipt details populated via JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-close="modalReceipt">Close</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Print Voucher</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
