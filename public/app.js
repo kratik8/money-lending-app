@@ -1,4 +1,4 @@
-// LendTrack Pro Node.js Web Application Logic with Multi-Currency Engine
+// Fundify Pro Node.js Web Application Logic with Multi-Currency Engine
 
 const CURRENCY_CONFIG = {
     INR: { symbol: '₹', code: 'INR', locale: 'en-IN', rate: 83.5, name: 'Indian Rupee (₹)' },
@@ -18,20 +18,70 @@ let currentLoans = [];
 let currentTransactions = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+    initIntroSplash();
+    initContinuousBgGraphics();
     initCurrencySelector();
     initNavigation();
     initTheme();
     initModals();
     initForms();
     initSearchAndFilters();
+    initBrandClickReplay();
     
     // Initial fetch from Node API
     loadAllData();
 });
 
+// Opening Animation Splash Controller
+function initIntroSplash() {
+    const splash = document.getElementById('introSplash');
+    const progressBar = document.getElementById('splashProgressBar');
+    const statusText = document.getElementById('splashStatusText');
+    if (!splash || !progressBar) return;
+
+    splash.style.display = 'flex';
+    splash.classList.remove('fade-out');
+    progressBar.style.width = '0%';
+
+    const stages = [
+        { progress: '30%', text: 'Securing Financial Engine...' },
+        { progress: '65%', text: 'Loading Ledger & Capital Data...' },
+        { progress: '90%', text: 'Optimizing Portfolio Analytics...' },
+        { progress: '100%', text: 'Fundify Pro Ready' }
+    ];
+
+    let currentStage = 0;
+    const interval = setInterval(() => {
+        if (currentStage < stages.length) {
+            progressBar.style.width = stages[currentStage].progress;
+            if (statusText) statusText.textContent = stages[currentStage].text;
+            currentStage++;
+        } else {
+            clearInterval(interval);
+            setTimeout(() => {
+                splash.classList.add('fade-out');
+                setTimeout(() => {
+                    splash.style.display = 'none';
+                }, 800);
+            }, 250);
+        }
+    }, 260);
+}
+
+// Re-play Intro Animation on Brand Logo Click
+function initBrandClickReplay() {
+    const brand = document.querySelector('.brand');
+    if (brand) {
+        brand.style.cursor = 'pointer';
+        brand.addEventListener('click', () => {
+            initIntroSplash();
+        });
+    }
+}
+
 // Auto Detect & Multi Currency Controller
 function detectUserCurrency() {
-    const saved = localStorage.getItem('lendtrack_currency');
+    const saved = localStorage.getItem('fundify_currency');
     if (saved && CURRENCY_CONFIG[saved]) {
         return saved;
     }
@@ -59,7 +109,7 @@ function initCurrencySelector() {
         selector.value = currentCurrency;
         selector.addEventListener('change', (e) => {
             currentCurrency = e.target.value;
-            localStorage.setItem('lendtrack_currency', currentCurrency);
+            localStorage.setItem('fundify_currency', currentCurrency);
             updateCurrencySymbolsUI();
             loadAllData();
             showToast(`Currency switched to ${CURRENCY_CONFIG[currentCurrency].name}`);
@@ -763,7 +813,7 @@ function viewReceipt(txnId, txnObj = null) {
 
     receiptContent.innerHTML = `
         <div class="receipt-header">
-            <h2>LENDTRACK CAPITAL CORP</h2>
+            <h2>FUNDIFY CAPITAL CORP</h2>
             <div>OFFICIAL REPAYMENT VOUCHER</div>
             <div style="font-size:0.8rem; margin-top:4px;">Receipt ID: ${txn.id}</div>
         </div>
@@ -814,4 +864,142 @@ function viewReceipt(txnId, txnObj = null) {
     `;
 
     openModal('modalReceipt');
+}
+
+// Continuous Background HTML5 Financial Graphics Engine
+function initContinuousBgGraphics() {
+    const canvas = document.getElementById('bgCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    const particles = [];
+    const particleCount = Math.min(Math.floor(width / 25), 65);
+    const mouse = { x: null, y: null, radius: 160 };
+
+    window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+    });
+
+    window.addEventListener('mouseleave', () => {
+        mouse.x = null;
+        mouse.y = null;
+    });
+
+    const colorPalette = [
+        'rgba(99, 102, 241, ', // Indigo
+        'rgba(59, 130, 246, ', // Blue
+        'rgba(16, 185, 129, ', // Emerald
+        'rgba(139, 92, 246, '  // Purple
+    ];
+
+    class NodeParticle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.vx = (Math.random() - 0.5) * 0.8;
+            this.vy = (Math.random() - 0.5) * 0.8;
+            this.radius = Math.random() * 2.2 + 1.2;
+            this.baseColor = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+            this.alpha = Math.random() * 0.5 + 0.3;
+            this.pulse = Math.random() * Math.PI * 2;
+            this.pulseSpeed = Math.random() * 0.03 + 0.01;
+        }
+
+        update() {
+            this.x += this.vx;
+            this.y += this.vy;
+            this.pulse += this.pulseSpeed;
+
+            if (this.x < 0 || this.x > width) this.vx *= -1;
+            if (this.y < 0 || this.y > height) this.vy *= -1;
+
+            // Mouse Interaction Logic
+            if (mouse.x !== null && mouse.y !== null) {
+                const dx = mouse.x - this.x;
+                const dy = mouse.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < mouse.radius) {
+                    const force = (mouse.radius - dist) / mouse.radius;
+                    this.x -= (dx / dist) * force * 1.5;
+                    this.y -= (dy / dist) * force * 1.5;
+                }
+            }
+        }
+
+        draw() {
+            const currentAlpha = this.alpha + Math.sin(this.pulse) * 0.2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.baseColor + Math.max(0.1, currentAlpha) + ')';
+            ctx.fill();
+
+            // Glow Ring around node
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2);
+            ctx.fillStyle = this.baseColor + (Math.max(0.1, currentAlpha) * 0.15) + ')';
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < particleCount; i++) {
+        particles.push(new NodeParticle());
+    }
+
+    let waveOffset = 0;
+
+    function renderLoop() {
+        ctx.clearRect(0, 0, width, height);
+
+        // 1. Draw Subtle Sine Financial Trend Wave in Background
+        waveOffset += 0.015;
+        ctx.beginPath();
+        ctx.moveTo(0, height * 0.7);
+        for (let x = 0; x < width; x += 15) {
+            const y = Math.sin(x * 0.003 + waveOffset) * 25 + Math.cos(x * 0.001 + waveOffset * 0.5) * 15 + height * 0.75;
+            ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'rgba(99, 102, 241, 0.06)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 2. Connect Node Particles with Dynamic Lines
+        const maxDist = 140;
+        for (let a = 0; a < particles.length; a++) {
+            for (let b = a + 1; b < particles.length; b++) {
+                const dx = particles[a].x - particles[b].x;
+                const dy = particles[a].y - particles[b].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < maxDist) {
+                    const lineAlpha = (1 - dist / maxDist) * 0.22;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[a].x, particles[a].y);
+                    ctx.lineTo(particles[b].x, particles[b].y);
+                    ctx.strokeStyle = `rgba(99, 102, 241, ${lineAlpha})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // 3. Update & Draw Particles
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+
+        requestAnimationFrame(renderLoop);
+    }
+
+    renderLoop();
 }

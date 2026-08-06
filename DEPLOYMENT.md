@@ -1,6 +1,6 @@
 # 🚀 Production Dockerization, Docker Hub & AWS EC2 Ubuntu Deployment Guide
 
-This systematic deployment guide walks you through building the Docker image for **LendTrack**, pushing it to **Docker Hub**, pulling it onto an **AWS EC2 Ubuntu server**, and serving it securely behind an **Nginx Reverse Proxy with HTTP Basic Authentication**.
+This systematic deployment guide walks you through building the Docker image for **Fundify**, pushing it to **Docker Hub**, pulling it onto an **AWS EC2 Ubuntu server**, and serving it securely behind an **Nginx Reverse Proxy with HTTP Basic Authentication**.
 
 ---
 
@@ -49,17 +49,17 @@ docker images
 ### 3. Test Running Locally
 ```bash
 docker run -d \
-  -p 3000:3000 \
-  --name test-lendtrack \
-  -v lendtrack_data:/app/data \
+  -p 5000:5000 \
+  --name test-fundify \
+  -v fundify_data:/app/data \
   <your-dockerhub-username>/money-lending-app:latest
 ```
 
-Open `http://localhost:3000` in your browser to verify it runs smoothly.
+Open `http://localhost:5000` in your browser to verify it runs smoothly.
 
 ### 4. Stop Local Test Container
 ```bash
-docker stop test-lendtrack && docker rm test-lendtrack
+docker stop test-fundify && docker rm test-fundify
 ```
 
 ---
@@ -150,9 +150,9 @@ sudo chown -R 1000:1000 /var/lib/money-lending-app/data
 ### 3. Run the Container in Background with Restart Policy & Data Volume
 ```bash
 docker run -d \
-  --name lendtrack-app \
+  --name fundify-app \
   --restart always \
-  -p 127.0.0.1:3000:3000 \
+  -p 127.0.0.1:5000:5000 \
   -v /var/lib/money-lending-app/data:/app/data \
   <your-dockerhub-username>/money-lending-app:latest
 ```
@@ -160,7 +160,7 @@ docker run -d \
 ### 4. Check Container Status
 ```bash
 docker ps
-docker logs lendtrack-app
+docker logs fundify-app
 ```
 
 ---
@@ -178,16 +178,16 @@ Paste the following configuration:
 server {
     listen 80;
     listen [::]:80;
-    server_name _; # Or replace with your domain name e.g., lend.example.com
+    server_name _; # Or replace with your domain name e.g., fundify.example.com
 
     client_max_body_size 10M;
 
     # NGINX HTTP BASIC AUTHENTICATION
-    auth_basic "Restricted Access - LendTrack Admin Authentication";
+    auth_basic "Restricted Access - Fundify Admin Authentication";
     auth_basic_user_file /etc/nginx/.htpasswd;
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:5000;
         proxy_http_version 1.1;
 
         proxy_set_header Host $host;
@@ -224,7 +224,7 @@ Open your web browser and navigate to your EC2 public IP or domain:
 http://<your-ec2-public-ip>
 ```
 - Browser will display a authentication prompt requesting **Username** (`admin`) and **Password**.
-- After entering valid credentials, the **LendTrack Money Lending System** portal opens!
+- After entering valid credentials, the **Fundify Money Lending System** portal opens!
 
 ### 2. How to Update Application in Future
 Whenever you update your code:
@@ -236,15 +236,15 @@ Whenever you update your code:
 2. On EC2 Instance:
    ```bash
    docker pull <your-dockerhub-username>/money-lending-app:latest
-   docker stop lendtrack-app && docker rm lendtrack-app
-   docker run -d --name lendtrack-app --restart always -p 127.0.0.1:3000:3000 -v /var/lib/money-lending-app/data:/app/data <your-dockerhub-username>/money-lending-app:latest
+   docker stop fundify-app && docker rm fundify-app
+   docker run -d --name fundify-app --restart always -p 127.0.0.1:5000:5000 -v /var/lib/money-lending-app/data:/app/data <your-dockerhub-username>/money-lending-app:latest
    ```
 
 ---
 
 ## 🛠️ Summary of Files Created in Project
-- [Dockerfile](file:///c:/Users/krati/Desktop/money-lending-app/Dockerfile) - Production Node.js container setup.
-- [.dockerignore](file:///c:/Users/krati/Desktop/money-lending-app/.dockerignore) - Excludes `node_modules` and metadata.
-- [nginx.conf](file:///c:/Users/krati/Desktop/money-lending-app/nginx.conf) - Pre-configured reverse proxy & authentication rules.
-- [docker-compose.yml](file:///c:/Users/krati/Desktop/money-lending-app/docker-compose.yml) - Optional multi-container runner.
-- [DEPLOYMENT.md](file:///c:/Users/krati/Desktop/money-lending-app/DEPLOYMENT.md) - Full step-by-step terminal instructions.
+- [Dockerfile](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/Dockerfile) - Production Node.js container setup.
+- [.dockerignore](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/.dockerignore) - Excludes `node_modules` and metadata.
+- [nginx.conf](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/nginx.conf) - Pre-configured reverse proxy & authentication rules.
+- [docker-compose.yml](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/docker-compose.yml) - Optional multi-container runner.
+- [DEPLOYMENT.md](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/DEPLOYMENT.md) - Full step-by-step terminal instructions.

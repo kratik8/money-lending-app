@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LendTrack Pro | Money Lending & Borrower Ledger System</title>
+    <title>Fundify Pro | Money Lending & Borrower Ledger System</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,6 +13,33 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="dark-theme">
+    <!-- INTRO OPENING ANIMATION SPLASH SCREEN -->
+    <div class="intro-splash" id="introSplash">
+        <div class="splash-bg-glow glow-a"></div>
+        <div class="splash-bg-glow glow-b"></div>
+        <div class="splash-content">
+            <div class="splash-logo-wrapper">
+                <div class="splash-logo-ring"></div>
+                <div class="splash-logo-icon">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+            </div>
+            <h1 class="splash-title">Fundify <span class="splash-pro">PRO</span></h1>
+            <p class="splash-subtitle">Financial Ledger & Capital Management Engine</p>
+            
+            <div class="splash-progress-wrapper">
+                <div class="splash-progress-bar" id="splashProgressBar"></div>
+            </div>
+            <div class="splash-status-text" id="splashStatusText">Securing Financial Engine...</div>
+        </div>
+    </div>
+
+    <!-- AMBIENT BACKGROUND GLOW ORBS & CONTINUOUS GRAPHICS CANVAS -->
+    <div class="ambient-glow glow-orb-1"></div>
+    <div class="ambient-glow glow-orb-2"></div>
+    <div class="ambient-glow glow-orb-3"></div>
+    <canvas id="bgCanvas" class="bg-graphics-canvas"></canvas>
+
     <div class="app-container">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
@@ -21,7 +48,7 @@
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
                 <div class="brand-text">
-                    <h2>LendTrack <span class="badge-pro">PRO</span></h2>
+                    <h2>Fundify <span class="badge-pro">PRO</span></h2>
                     <span>Node Financial Ledger</span>
                 </div>
             </div>

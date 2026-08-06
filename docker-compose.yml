@@ -1,26 +1,26 @@
 version: '3.8'
 
 services:
-  # Node.js LendTrack Money Lending Application
+  # Node.js Fundify Money Lending Application
   web:
     build:
       context: .
       dockerfile: Dockerfile
     image: money-lending-app:latest
-    container_name: lendtrack-app
+    container_name: fundify-app
     restart: always
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - PORT=3000
+      - PORT=5000
     volumes:
-      - lendtrack-data:/app/data
+      - fundify-data:/app/data
 
   # Nginx Reverse Proxy Server with Authentication
   nginx:
     image: nginx:alpine
-    container_name: lendtrack-nginx
+    container_name: fundify-nginx
     restart: always
     ports:
       - "80:80"
@@ -31,5 +31,5 @@ services:
       - web
 
 volumes:
-  lendtrack-data:
+  fundify-data:
     driver: local

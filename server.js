@@ -11,7 +11,7 @@ const DB_FILE = path.join(DATA_DIR, 'db.json');
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname)); // Fallback for root files
+
 
 // Initial Seed Data
 const getSeedData = () => ({
@@ -199,7 +199,7 @@ const getSeedData = () => ({
   ],
   settings: {
     currencySymbol: '$',
-    companyName: 'LendTrack Capital Corp.',
+    companyName: 'Fundify Capital Corp.',
     defaultInterestRate: 12,
     lateFeePercentage: 2
   }
@@ -563,7 +563,7 @@ app.post('/api/calculator', (req, res) => {
 app.get('/api/backup', (req, res) => {
   const db = readDB();
   res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Content-Disposition', `attachment; filename=lendtrack_backup_${Date.now()}.json`);
+  res.setHeader('Content-Disposition', `attachment; filename=fundify_backup_${Date.now()}.json`);
   res.send(JSON.stringify(db, null, 2));
 });
 
@@ -590,7 +590,7 @@ app.post('/api/reset-sample', (req, res) => {
 function startServer(portToUse) {
   const server = app.listen(portToUse, () => {
     console.log(`=======================================================`);
-    console.log(`🚀 LendTrack Node.js Financial Server running!`);
+    console.log(`🚀 Fundify Node.js Financial Server running!`);
     console.log(`🌐 Local Web Portal: http://localhost:${portToUse}`);
     console.log(`=======================================================`);
   });
