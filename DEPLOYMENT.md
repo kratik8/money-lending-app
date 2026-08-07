@@ -1,6 +1,6 @@
 # 🚀 Production Dockerization, Docker Hub & AWS EC2 Ubuntu Deployment Guide
 
-This systematic deployment guide walks you through building the Docker image for **Fundify**, pushing it to **Docker Hub**, pulling it onto an **AWS EC2 Ubuntu server**, and serving it securely behind an **Nginx Reverse Proxy with HTTP Basic Authentication**.
+This systematic deployment guide walks you through building the Docker image for **Fundify**, pushing it to **Docker Hub**, pulling it onto an **AWS EC2 Ubuntu server**, and serving it publicly behind an **Nginx Reverse Proxy**.
 
 ---
 
@@ -10,10 +10,10 @@ This systematic deployment guide walks you through building the Docker image for
 3. [Step 2: Push Image to Docker Hub](#step-2-push-image-to-docker-hub)
 4. [Step 3: Setup AWS EC2 Ubuntu Server](#step-3-setup-aws-ec2-ubuntu-server)
 5. [Step 4: Install Docker & Nginx on EC2](#step-4-install-docker--nginx-on-ec2)
-6. [Step 5: Configure Nginx Basic Authentication](#step-5-configure-nginx-basic-authentication)
-7. [Step 6: Pull & Run Docker Container on EC2](#step-6-pull--run-docker-container-on-ec2)
-8. [Step 7: Configure Nginx Reverse Proxy](#step-7-configure-nginx-reverse-proxy)
-9. [Step 8: Verification & Maintenance](#step-8-verification--maintenance)
+6. [Step 5: Pull & Run Docker Container on EC2](#step-5-pull--run-docker-container-on-ec2)
+7. [Step 6: Configure Nginx Reverse Proxy (Public Access)](#step-6-configure-nginx-reverse-proxy-public-access)
+8. [Step 7: Verification & Maintenance](#step-7-verification--maintenance)
+9. [⚡ Removing Credentials Prompt on Existing Live EC2](#-removing-credentials-prompt-on-existing-live-ec2)
 
 ---
 
@@ -99,7 +99,7 @@ Run the following commands on your EC2 Ubuntu terminal:
 
 ### 1. Install Docker & Nginx
 ```bash
-sudo apt install -y docker.io nginx apache2-utils
+sudo apt install -y docker.io nginx
 ```
 
 ### 2. Enable & Start Services
@@ -116,25 +116,7 @@ newgrp docker
 
 ---
 
-## Step 5: Configure Nginx Basic Authentication
-
-Nginx will require a username & password to access the app.
-
-### 1. Create the `.htpasswd` Auth File
-Run `htpasswd` to generate credentials for the user `admin`:
-```bash
-sudo htpasswd -c /etc/nginx/.htpasswd admin
-```
-> You will be prompted to enter and confirm a password for the `admin` account.
-
-### 2. Verify `.htpasswd` File Exists
-```bash
-sudo cat /etc/nginx/.htpasswd
-```
-
----
-
-## Step 6: Pull & Run Docker Container on EC2
+## Step 5: Pull & Run Docker Container on EC2
 
 ### 1. Pull Image from Docker Hub
 ```bash
@@ -165,7 +147,7 @@ docker logs fundify-app
 
 ---
 
-## Step 7: Configure Nginx Reverse Proxy
+## Step 6: Configure Nginx Reverse Proxy (Public Access)
 
 ### 1. Create Nginx Site Configuration
 Create `/etc/nginx/sites-available/money-lending-app`:
@@ -181,10 +163,6 @@ server {
     server_name _; # Or replace with your domain name e.g., fundify.example.com
 
     client_max_body_size 10M;
-
-    # NGINX HTTP BASIC AUTHENTICATION
-    auth_basic "Restricted Access - Fundify Admin Authentication";
-    auth_basic_user_file /etc/nginx/.htpasswd;
 
     location / {
         proxy_pass http://127.0.0.1:5000;
@@ -216,15 +194,14 @@ sudo systemctl reload nginx
 
 ---
 
-## Step 8: Verification & Maintenance
+## Step 7: Verification & Maintenance
 
 ### 1. Test Application Access
 Open your web browser and navigate to your EC2 public IP or domain:
 ```
 http://<your-ec2-public-ip>
 ```
-- Browser will display a authentication prompt requesting **Username** (`admin`) and **Password**.
-- After entering valid credentials, the **Fundify Money Lending System** portal opens!
+- The website will load directly **without any username/password prompt**.
 
 ### 2. How to Update Application in Future
 Whenever you update your code:
@@ -242,9 +219,31 @@ Whenever you update your code:
 
 ---
 
+## ⚡ Removing Credentials Prompt on Existing Live EC2
+
+If your application is already running live on EC2 and asking for an Admin ID & Password when visiting the IP, follow these 3 quick commands on your EC2 terminal:
+
+1. **Edit your Nginx config on EC2**:
+   ```bash
+   sudo nano /etc/nginx/sites-available/money-lending-app
+   ```
+2. **Delete or comment out these two lines**:
+   ```nginx
+   # auth_basic "Restricted Access...";
+   # auth_basic_user_file /etc/nginx/.htpasswd;
+   ```
+3. **Test and Reload Nginx**:
+   ```bash
+   sudo nginx -t
+   sudo systemctl reload nginx
+   ```
+Now refresh `http://<your-ec2-public-ip>` in your browser and it will open directly without asking for credentials!
+
+---
+
 ## 🛠️ Summary of Files Created in Project
 - [Dockerfile](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/Dockerfile) - Production Node.js container setup.
 - [.dockerignore](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/.dockerignore) - Excludes `node_modules` and metadata.
-- [nginx.conf](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/nginx.conf) - Pre-configured reverse proxy & authentication rules.
-- [docker-compose.yml](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/docker-compose.yml) - Optional multi-container runner.
+- [nginx.conf](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/nginx.conf) - Pre-configured reverse proxy (open public access).
+- [docker-compose.yml](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/docker-compose.yml) - Multi-container runner.
 - [DEPLOYMENT.md](file:///c:/Users/krati/Desktop/AWSproject/money-lending-app/DEPLOYMENT.md) - Full step-by-step terminal instructions.

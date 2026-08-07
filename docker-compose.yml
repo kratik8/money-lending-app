@@ -17,7 +17,7 @@ services:
     volumes:
       - fundify-data:/app/data
 
-  # Nginx Reverse Proxy Server with Authentication
+  # Nginx Reverse Proxy Server
   nginx:
     image: nginx:alpine
     container_name: fundify-nginx
@@ -26,7 +26,6 @@ services:
       - "80:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./.htpasswd:/etc/nginx/.htpasswd:ro
     depends_on:
       - web
 
